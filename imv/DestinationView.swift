@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import AVFoundation
 
 protocol DestinationViewDelegate {
     func processURLs(sender: DestinationView, urls: [URL])
@@ -30,10 +31,12 @@ class DestinationView: NSView {
     }
     
     
-    let filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:["public.text"]]
+    var filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:["public.text"]] //Default
+    
     func shouldAllowDrag(_ draggingInfo: NSDraggingInfo) -> Bool {
         var canAccept = false
         let pasteBoard = draggingInfo.draggingPasteboard()
+        //let type = pasteBoard.types
         if pasteBoard.canReadObject(forClasses: [NSURL.self], options: filteringOptions) {
             canAccept = true
         }

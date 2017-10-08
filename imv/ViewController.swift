@@ -7,6 +7,8 @@
 //
 
 import Cocoa
+import AVKit
+import AVFoundation
 
 class ViewController: NSViewController {
     @IBOutlet weak var plotView1: PlotView!
@@ -15,16 +17,29 @@ class ViewController: NSViewController {
     @IBOutlet weak var destView2: DestinationView!
     @IBOutlet weak var plotView3: PlotView!
     @IBOutlet weak var destView3: DestinationView!
-
+    @IBOutlet weak var movieView: AVPlayerView!
+    @IBOutlet weak var destViewMovie: DestinationView!
+    
     @IBOutlet weak var playPauseButton: NSButton!
     @IBOutlet weak var timeSlider: NSSlider!
     @IBOutlet weak var currentLabel: NSTextField!
     @IBOutlet weak var durationLabel: NSTextField!
     
+    @IBOutlet weak var titleLabel1: NSTextField!
+    @IBOutlet weak var titleLabel2: NSTextField!
+    @IBOutlet weak var titleLabel3: NSTextField!
+    @IBOutlet weak var yMaxLabel1: NSTextField!
+    @IBOutlet weak var yMinLabel1: NSTextField!
+    @IBOutlet weak var yMaxLabel2: NSTextField!
+    @IBOutlet weak var yMinLabel2: NSTextField!
+    @IBOutlet weak var yMaxLabel3: NSTextField!
+    @IBOutlet weak var yMinLabel3: NSTextField!
+    
+    @IBOutlet weak var padField: NSTextField!
+    
     
     var timer: Timer!
-    var startTime: Date!
-    
+    var timerStart: Date!
     var lastCurrentTime: Double = 0.0 //sec
     
     var currentTime: Double = 0.0 { //sec
@@ -33,21 +48,40 @@ class ViewController: NSViewController {
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
+//            if movieView.player!.rate==0.0 {
+//                let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
+//                movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+//            }
+            if let player = movieView.player {
+                if player.rate==0.0 {
+                    let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
+                    movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+                }
+            }
         }
     }
     
     var rate: Double = 0.0 {
         willSet {
             if newValue == 0.0 {
-                self.startTime = nil
+                if let player = movieView.player {
+                    player.pause()
+                }
+//                movieView.player!.pause() //TODO: check wheter player is set.
+                
+                self.timerStart = nil
                 if let timer = self.timer {
                     timer.invalidate()
                 }
                 self.timer = nil
             }
             else {
+                if let player = movieView.player {
+                    player.play()
+                }
+//                movieView.player!.play()
                 self.lastCurrentTime = self.currentTime
-                startTime = Date()
+                timerStart = Date()
                 timer = Timer.scheduledTimer(timeInterval: 0.05,
                                              target: self,
                                              selector: #selector(timerAction),
@@ -76,13 +110,13 @@ class ViewController: NSViewController {
         destView1.delegate=self
         destView2.delegate=self
         destView3.delegate=self
+        destViewMovie.delegate=self
+        destViewMovie.filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:[AVFileTypeMPEG4]]
         
         let buttonImage = NSImage(named: "PlayButton")
         playPauseButton.image = buttonImage
         timeSlider.minValue = 0.0
-        timeSlider.maxValue = 60.0
         timeSlider.doubleValue = 0.0
-        durationLabel.stringValue = self.createTimeString(time: timeSlider.maxValue)
     }
 
     override var representedObject: Any? {
@@ -108,6 +142,14 @@ class ViewController: NSViewController {
         self.currentTime = self.timeSlider.doubleValue
     }
     
+    @IBAction func padFieldChanged(_ sender: Any) {
+        if let d = Double(padField.stringValue) {
+            print(d)
+        }
+    }
+    
+    
+    
     func createTimeString(time: Double) -> String {
         let components = NSDateComponents()
         components.second = Int(max(0.0, time))
@@ -122,16 +164,36 @@ extension ViewController: DestinationViewDelegate {
             let gridView = GridView.init(frame: destView1.frame) //ToDo add gridView only when needed
             destView1.addSubview(gridView)
             plotView1.readFile(urls[0])
+            
+            titleLabel1.stringValue = plotView1.title
+            yMaxLabel1.stringValue = String(plotView1.yMax)
+            yMinLabel1.stringValue = String(plotView1.yMin)
         }
         else if sender == destView2 {
             let gridView = GridView.init(frame: destView2.frame)
             destView2.addSubview(gridView)
             plotView2.readFile(urls[0])
+            
+            titleLabel2.stringValue = plotView2.title
+            yMaxLabel2.stringValue = String(plotView2.yMax)
+            yMinLabel2.stringValue = String(plotView2.yMin)
         }
         else if sender == destView3 {
             let gridView = GridView.init(frame: destView3.frame)
             destView3.addSubview(gridView)
             plotView3.readFile(urls[0])
+            
+            titleLabel3.stringValue = plotView3.title
+            yMaxLabel3.stringValue = String(plotView3.yMax)
+            yMinLabel3.stringValue = String(plotView3.yMin)
+        }
+        else if sender == destViewMovie {
+            let avAsset = AVURLAsset(url: urls[0], options: nil)
+            let playerItem = AVPlayerItem(asset: avAsset)
+            let player = AVPlayer(playerItem: playerItem)
+            movieView.player = player
+            timeSlider.maxValue = CMTimeGetSeconds(player.currentItem!.asset.duration)
+            durationLabel.stringValue = self.createTimeString(time: timeSlider.maxValue)
         }
         else {
             print("ERROR DestinationViewDelegate not properly called.")
@@ -141,7 +203,7 @@ extension ViewController: DestinationViewDelegate {
 
 extension ViewController {
     func timerAction(_ tm : Timer){
-        let elapsedTime: TimeInterval = -startTime!.timeIntervalSinceNow;
+        let elapsedTime: TimeInterval = -timerStart!.timeIntervalSinceNow;
         self.currentTime = self.lastCurrentTime + elapsedTime
         self.timeSlider.doubleValue=self.currentTime
         self.currentLabel.stringValue = self.createTimeString(time: self.currentTime)
