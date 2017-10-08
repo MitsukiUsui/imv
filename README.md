@@ -13,7 +13,7 @@ You need Xcode >= 8.0 to build, as imv is written in Swift3.
 ## Usage
 imv adopts simple drag & drop interface. Currently imv accepts 2 file types as input, `.mp4` for movie and `.txt` for time-series numeric data. 
 
-### input format(.txt)
+### format(.txt)
 `.txt` needs to be composed of two parts 
 
 1. a configuration header which starts with '#'
