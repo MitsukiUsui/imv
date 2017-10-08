@@ -48,11 +48,7 @@ class ViewController: NSViewController {
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
-//            if movieView.player!.rate==0.0 {
-//                let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
-//                movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
-//            }
-            if let player = movieView.player {
+            if let player = movieView.player { // seek only when currentTime is set by timeSlider
                 if player.rate==0.0 {
                     let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
@@ -65,9 +61,10 @@ class ViewController: NSViewController {
         willSet {
             if newValue == 0.0 {
                 if let player = movieView.player {
+                    let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
+                    movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.pause()
                 }
-//                movieView.player!.pause() //TODO: check wheter player is set.
                 
                 self.timerStart = nil
                 if let timer = self.timer {
@@ -77,9 +74,10 @@ class ViewController: NSViewController {
             }
             else {
                 if let player = movieView.player {
+                    let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
+                    movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.play()
                 }
-//                movieView.player!.play()
                 self.lastCurrentTime = self.currentTime
                 timerStart = Date()
                 timer = Timer.scheduledTimer(timeInterval: 0.05,
@@ -144,11 +142,17 @@ class ViewController: NSViewController {
     
     @IBAction func padFieldChanged(_ sender: Any) {
         if let d = Double(padField.stringValue) {
-            print(d)
+            if rate != 0.0 { //automatically stop
+                rate = 0.0
+            }
+            plotView1.padSec = d
+            plotView1.updateDraw(time: currentTime)
+            plotView2.padSec = d
+            plotView2.updateDraw(time: currentTime)
+            plotView3.padSec = d
+            plotView3.updateDraw(time: currentTime)
         }
     }
-    
-    
     
     func createTimeString(time: Double) -> String {
         let components = NSDateComponents()
