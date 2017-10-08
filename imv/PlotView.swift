@@ -9,30 +9,40 @@
 import Cocoa
 
 class PlotView: NSView {
+    //???
     var width: CGFloat = CGFloat(0.0)
     var height: CGFloat = CGFloat(0.0)
-    var data: [Double] = []
-
-    let yMax: Double = 20.0
-    let yMin: Double = -20.0
-    let fps: Double = 20.0
-    let windowSec: Double = 10.0 //total seconds displayed
     
+    //configuration. Declared in parseConfiguration()
+    var title: String!
+    var fps: Double!
+    var yMax: Double!
+    var yMin: Double!
+    var windowSec: Double!
+
+    //data to plot
+    var data: [Double] = []
     var currentIndex: Int = 0
 
+
     func readFile(_ fileURL: URL){
-        var myarray_str: [String]
+        //1.get lines
+        var lines: [String]
         do {
             let text = try String( contentsOf: fileURL, encoding: String.Encoding.utf8 )
-            myarray_str = text.components(separatedBy: .newlines)
-            
+            lines = text.components(separatedBy: .newlines)
         } catch let error as NSError{
             print(error.localizedDescription)
             return
         }
         
+        //2.parse header config
+        let header = lines[0]
+        parseConfiguration(header)
+        
+        //3. load data
         var data: [Double] = []
-        for val in myarray_str {
+        for val in lines[1...] {
             if let d = Double(val) {
                 data.append(d)
             }
@@ -41,9 +51,32 @@ class PlotView: NSView {
         self.setNeedsDisplay(self.bounds)
     }
     
+    func parseConfiguration(_ header: String) {
+        assert (header[header.startIndex]=="#", "ERROR: no configuration header found")
+        
+        var config: [String: String] = [:]
+        let splitedHeader=header.suffix(header.count-1).components(separatedBy: ";")
+        for substr in splitedHeader {
+            let arr = substr.components(separatedBy: "=")
+            if (arr.count==2) {
+                config[arr[0]] = arr[1]
+            }else{
+                print("WARN: bad configuration, " + substr)
+            }
+        }
+        
+        if let title = config["title"] { self.title = title } else { self.title = "DEFAULT_TITLE"}
+        if let fps_str = config["fps"], let fps_d = Double(fps_str){ self.fps = fps_d } else { self.fps = 20 }
+        if let yMax_str = config["yMax"], let yMax_d = Double(yMax_str){ self.yMax = yMax_d } else { self.yMax = 10.0 }
+        if let yMin_str = config["yMin"], let yMin_d = Double(yMin_str){ self.yMin = yMin_d } else { self.yMin = -10.0 }
+        if let windowSec_str = config["windowSec"], let windowSec_d = Double(windowSec_str){ self.windowSec = windowSec_d } else { self.windowSec = 10.0}
+    }
+    
     func updateDraw(time: Double) {
-        self.currentIndex = Int(time * fps)
-        self.setNeedsDisplay(self.bounds)
+        if self.data.count>0 {
+            self.currentIndex = Int(time * fps)
+            self.setNeedsDisplay(self.bounds)
+        }
     }
     
     override func draw(_ rect: NSRect) {
@@ -80,4 +113,5 @@ class PlotView: NSView {
         path.close()
     }
 }
+
 
