@@ -47,6 +47,7 @@ class ViewController: NSViewController {
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
+            
             if let player = movieView.player { // seek only when currentTime is set by timeSlider
                 if player.rate==0.0 {
                     let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
@@ -64,7 +65,6 @@ class ViewController: NSViewController {
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.pause()
                 }
-                
                 stopwatch.stop()
             }
             else {
@@ -84,13 +84,13 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        stopwatch.delegate=self
-        
         destView1.delegate=self
         destView2.delegate=self
         destView3.delegate=self
         destViewMovie.delegate=self
         destViewMovie.filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:[AVFileTypeMPEG4]]
+        
+        stopwatch.delegate=self
         
         playPauseButton.image = NSImage(named: "PlayButton")
         timeSlider.minValue = 0.0
@@ -128,10 +128,10 @@ class ViewController: NSViewController {
                 rate = 0.0
             }
             plotView1.padSec = d
-            plotView1.updateDraw(time: currentTime)
             plotView2.padSec = d
-            plotView2.updateDraw(time: currentTime)
             plotView3.padSec = d
+            plotView1.updateDraw(time: currentTime)
+            plotView2.updateDraw(time: currentTime)
             plotView3.updateDraw(time: currentTime)
         }
     }
