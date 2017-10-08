@@ -32,4 +32,3 @@ The following is a description of each configuration field.
 |yMax|Double|upper limit for plot|
 |yMin|Double|lower limit for plot|
 |windowSec|Double|Time range for the plot window|
-
