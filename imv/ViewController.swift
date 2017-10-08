@@ -37,10 +37,7 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var padField: NSTextField!
     
-    
-    var timer: Timer!
-    var timerStart: Date!
-    var lastCurrentTime: Double = 0.0 //sec
+    let stopwatch: Stopwatch = Stopwatch()
     
     var currentTime: Double = 0.0 { //sec
         didSet {
@@ -62,17 +59,13 @@ class ViewController: NSViewController {
     var rate: Double = 0.0 {
         willSet {
             if newValue == 0.0 {
-                if let player = movieView.player {
+                if let player = movieView.player {  //TODO use optional chain instead of optional binding
                     let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.pause()
                 }
                 
-                self.timerStart = nil
-                if let timer = self.timer {
-                    timer.invalidate()
-                }
-                self.timer = nil
+                stopwatch.stop()
             }
             else {
                 if let player = movieView.player {
@@ -80,14 +73,7 @@ class ViewController: NSViewController {
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.play()
                 }
-                self.lastCurrentTime = self.currentTime
-                timerStart = Date()
-                timer = Timer.scheduledTimer(timeInterval: 0.05,
-                                             target: self,
-                                             selector: #selector(timerAction),
-                                             userInfo: nil,
-                                             repeats: true);
-                timer.fire()
+                stopwatch.start()
             }
             let buttonImageName = newValue == 0.0 ? "PlayButton" : "PauseButton"
             let buttonImage = NSImage(named: buttonImageName)
@@ -98,14 +84,15 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        stopwatch.delegate=self
+        
         destView1.delegate=self
         destView2.delegate=self
         destView3.delegate=self
         destViewMovie.delegate=self
         destViewMovie.filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:[AVFileTypeMPEG4]]
         
-        let buttonImage = NSImage(named: "PlayButton")
-        playPauseButton.image = buttonImage
+        playPauseButton.image = NSImage(named: "PlayButton")
         timeSlider.minValue = 0.0
         timeSlider.maxValue = 60.0 //DEFAULT
         timeSlider.doubleValue = 0.0
@@ -132,6 +119,7 @@ class ViewController: NSViewController {
             rate = 0.0
         }
         self.currentTime = self.timeSlider.doubleValue
+        stopwatch.update(self.currentTime)
     }
     
     @IBAction func padFieldChanged(_ sender: Any) {
@@ -207,10 +195,9 @@ extension ViewController: DestinationViewDelegate {
     }
 }
 
-extension ViewController {
-    func timerAction(_ tm : Timer){
-        let elapsedTime: TimeInterval = -timerStart!.timeIntervalSinceNow;
-        self.currentTime = self.lastCurrentTime + elapsedTime
+extension ViewController: StopwatchDelegate{
+    func timeUpdate(sender: Stopwatch, currentTime: Double) {
+        self.currentTime = currentTime
     }
 }
 
