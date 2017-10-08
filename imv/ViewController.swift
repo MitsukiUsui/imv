@@ -44,7 +44,9 @@ class ViewController: NSViewController {
     
     var currentTime: Double = 0.0 { //sec
         didSet {
-            self.currentLabel.stringValue = createTimeString(time: self.currentTime)
+            self.currentLabel.stringValue = self.createTimeString(time: self.currentTime)
+            self.timeSlider.doubleValue=self.currentTime
+            
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
@@ -93,15 +95,6 @@ class ViewController: NSViewController {
         }
     }
     
-    let timeRemainingFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.zeroFormattingBehavior = .pad
-        formatter.allowedUnits = [.minute, .second]
-        
-        return formatter
-    }()
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -114,6 +107,7 @@ class ViewController: NSViewController {
         let buttonImage = NSImage(named: "PlayButton")
         playPauseButton.image = buttonImage
         timeSlider.minValue = 0.0
+        timeSlider.maxValue = 60.0 //DEFAULT
         timeSlider.doubleValue = 0.0
     }
 
@@ -153,6 +147,14 @@ class ViewController: NSViewController {
             plotView3.updateDraw(time: currentTime)
         }
     }
+    
+    let timeRemainingFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.zeroFormattingBehavior = .pad
+        formatter.allowedUnits = [.minute, .second]
+        
+        return formatter
+    }()
     
     func createTimeString(time: Double) -> String {
         let components = NSDateComponents()
@@ -209,8 +211,6 @@ extension ViewController {
     func timerAction(_ tm : Timer){
         let elapsedTime: TimeInterval = -timerStart!.timeIntervalSinceNow;
         self.currentTime = self.lastCurrentTime + elapsedTime
-        self.timeSlider.doubleValue=self.currentTime
-        self.currentLabel.stringValue = self.createTimeString(time: self.currentTime)
     }
 }
 
