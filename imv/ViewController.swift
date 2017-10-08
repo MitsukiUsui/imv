@@ -37,17 +37,17 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var padField: NSTextField!
     
-    
-    var timer: Timer!
-    var timerStart: Date!
-    var lastCurrentTime: Double = 0.0 //sec
+    let stopwatch: Stopwatch = Stopwatch()
     
     var currentTime: Double = 0.0 { //sec
         didSet {
-            self.currentLabel.stringValue = createTimeString(time: self.currentTime)
+            self.currentLabel.stringValue = self.createTimeString(time: self.currentTime)
+            self.timeSlider.doubleValue=self.currentTime
+            
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
+            
             if let player = movieView.player { // seek only when currentTime is set by timeSlider
                 if player.rate==0.0 {
                     let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
@@ -60,17 +60,12 @@ class ViewController: NSViewController {
     var rate: Double = 0.0 {
         willSet {
             if newValue == 0.0 {
-                if let player = movieView.player {
+                if let player = movieView.player {  //TODO use optional chain instead of optional binding
                     let newTime = CMTimeMakeWithSeconds(self.currentTime, 1)
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.pause()
                 }
-                
-                self.timerStart = nil
-                if let timer = self.timer {
-                    timer.invalidate()
-                }
-                self.timer = nil
+                stopwatch.stop()
             }
             else {
                 if let player = movieView.player {
@@ -78,29 +73,13 @@ class ViewController: NSViewController {
                     movieView.player!.seek(to: newTime, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
                     player.play()
                 }
-                self.lastCurrentTime = self.currentTime
-                timerStart = Date()
-                timer = Timer.scheduledTimer(timeInterval: 0.05,
-                                             target: self,
-                                             selector: #selector(timerAction),
-                                             userInfo: nil,
-                                             repeats: true);
-                timer.fire()
+                stopwatch.start()
             }
             let buttonImageName = newValue == 0.0 ? "PlayButton" : "PauseButton"
             let buttonImage = NSImage(named: buttonImageName)
             playPauseButton.image = buttonImage
         }
     }
-    
-    let timeRemainingFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.zeroFormattingBehavior = .pad
-        formatter.allowedUnits = [.minute, .second]
-        
-        return formatter
-    }()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,9 +90,11 @@ class ViewController: NSViewController {
         destViewMovie.delegate=self
         destViewMovie.filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:[AVFileTypeMPEG4]]
         
-        let buttonImage = NSImage(named: "PlayButton")
-        playPauseButton.image = buttonImage
+        stopwatch.delegate=self
+        
+        playPauseButton.image = NSImage(named: "PlayButton")
         timeSlider.minValue = 0.0
+        timeSlider.maxValue = 60.0 //DEFAULT
         timeSlider.doubleValue = 0.0
     }
 
@@ -138,6 +119,7 @@ class ViewController: NSViewController {
             rate = 0.0
         }
         self.currentTime = self.timeSlider.doubleValue
+        stopwatch.update(self.currentTime)
     }
     
     @IBAction func padFieldChanged(_ sender: Any) {
@@ -146,13 +128,21 @@ class ViewController: NSViewController {
                 rate = 0.0
             }
             plotView1.padSec = d
-            plotView1.updateDraw(time: currentTime)
             plotView2.padSec = d
-            plotView2.updateDraw(time: currentTime)
             plotView3.padSec = d
+            plotView1.updateDraw(time: currentTime)
+            plotView2.updateDraw(time: currentTime)
             plotView3.updateDraw(time: currentTime)
         }
     }
+    
+    let timeRemainingFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.zeroFormattingBehavior = .pad
+        formatter.allowedUnits = [.minute, .second]
+        
+        return formatter
+    }()
     
     func createTimeString(time: Double) -> String {
         let components = NSDateComponents()
@@ -205,12 +195,9 @@ extension ViewController: DestinationViewDelegate {
     }
 }
 
-extension ViewController {
-    func timerAction(_ tm : Timer){
-        let elapsedTime: TimeInterval = -timerStart!.timeIntervalSinceNow;
-        self.currentTime = self.lastCurrentTime + elapsedTime
-        self.timeSlider.doubleValue=self.currentTime
-        self.currentLabel.stringValue = self.createTimeString(time: self.currentTime)
+extension ViewController: StopwatchDelegate{
+    func timeUpdate(sender: Stopwatch, currentTime: Double) {
+        self.currentTime = currentTime
     }
 }
 

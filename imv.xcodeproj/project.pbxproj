@@ -14,6 +14,7 @@
 		1F11BB371F64EF6000CF9199 /* DestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB361F64EF6000CF9199 /* DestinationView.swift */; };
 		1F11BB391F64EF7200CF9199 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB381F64EF7200CF9199 /* GridView.swift */; };
 		1F11BB3B1F64EF7F00CF9199 /* PlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */; };
+		1F83F5321F8A0201009CD5EC /* Stopwatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F83F5311F8A0201009CD5EC /* Stopwatch.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		1F11BB361F64EF6000CF9199 /* DestinationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationView.swift; sourceTree = "<group>"; };
 		1F11BB381F64EF7200CF9199 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotView.swift; sourceTree = "<group>"; };
+		1F83F5311F8A0201009CD5EC /* Stopwatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stopwatch.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 		1F11BB261F64EF0400CF9199 /* imv */ = {
 			isa = PBXGroup;
 			children = (
+				1F83F5301F8A01EE009CD5EC /* model */,
 				1F11BB3C1F64EF8900CF9199 /* Views */,
 				1F11BB271F64EF0400CF9199 /* AppDelegate.swift */,
 				1F11BB291F64EF0400CF9199 /* ViewController.swift */,
@@ -76,6 +79,14 @@
 				1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		1F83F5301F8A01EE009CD5EC /* model */ = {
+			isa = PBXGroup;
+			children = (
+				1F83F5311F8A0201009CD5EC /* Stopwatch.swift */,
+			);
+			name = model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F11BB371F64EF6000CF9199 /* DestinationView.swift in Sources */,
+				1F83F5321F8A0201009CD5EC /* Stopwatch.swift in Sources */,
 				1F11BB3B1F64EF7F00CF9199 /* PlotView.swift in Sources */,
 				1F11BB2A1F64EF0400CF9199 /* ViewController.swift in Sources */,
 				1F11BB391F64EF7200CF9199 /* GridView.swift in Sources */,
@@ -308,6 +320,7 @@
 				1F11BB351F64EF0400CF9199 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
