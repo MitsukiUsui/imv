@@ -9,9 +9,7 @@
 import Cocoa
 
 class PlotView: NSView {
-    //???
-    var width: CGFloat = CGFloat(0.0)
-    var height: CGFloat = CGFloat(0.0)
+    var isConfigured: Bool = false
     
     //configuration. Declared in parseConfiguration()
     var title: String!
@@ -23,7 +21,7 @@ class PlotView: NSView {
     //data to plot
     var data: [Double] = []
     var currentIndex: Int = 0
-
+    var padSec: Double = 0
 
     func readFile(_ fileURL: URL){
         //1.get lines
@@ -48,6 +46,8 @@ class PlotView: NSView {
             }
         }
         self.data = data
+        
+        self.isConfigured = true
         self.setNeedsDisplay(self.bounds)
     }
     
@@ -70,19 +70,20 @@ class PlotView: NSView {
         if let yMax_str = config["yMax"], let yMax_d = Double(yMax_str){ self.yMax = yMax_d } else { self.yMax = 10.0 }
         if let yMin_str = config["yMin"], let yMin_d = Double(yMin_str){ self.yMin = yMin_d } else { self.yMin = -10.0 }
         if let windowSec_str = config["windowSec"], let windowSec_d = Double(windowSec_str){ self.windowSec = windowSec_d } else { self.windowSec = 10.0}
+        
+        assert (self.yMax > self.yMin, "ERROR: yMax should be larger than yMin, yMax="+String(yMax)+", yMin="+String(yMin))
+        assert (self.fps > 0, "ERROR: fps should be a positive value, fps="+String(fps))
+        assert (self.windowSec > 0, "ERROR: windowSec should be a positive value fps="+String(self.windowSec))
     }
     
     func updateDraw(time: Double) {
-        if self.data.count>0 {
-            self.currentIndex = Int(time * fps)
+        if isConfigured {
+            self.currentIndex = Int((time - self.padSec) * self.fps)
             self.setNeedsDisplay(self.bounds)
         }
     }
     
     override func draw(_ rect: NSRect) {
-        width = rect.width
-        height = rect.height
-
         if self.data.count>0 {
             drawWave(rect)
         }
@@ -91,18 +92,18 @@ class PlotView: NSView {
     
     func drawWave(_ rect: NSRect) {
         let path = NSBezierPath()
-        let origin = CGPoint(x: 0, y: height * 0.5)
+        let origin = CGPoint(x: 0, y: 0)
         path.move(to: origin)
-        
+
         let first = self.currentIndex - Int((self.windowSec / 2.0) * self.fps)
         let last = self.currentIndex + Int((self.windowSec / 2.0) * self.fps)
         let windowPoints: Int = Int(self.windowSec * self.fps) + 1
         
         for i in first...last {
-            let x = origin.x + CGFloat(Double(i-first)/Double(windowPoints - 1)) * width
+            let x = origin.x + CGFloat(Double(i-first)/Double(windowPoints - 1)) * self.bounds.width
             var y = origin.y
             if i>=0 && i<self.data.count {
-                y += CGFloat(self.data[i]/yMax*Double(height)*0.5)
+                y += CGFloat( (self.data[i] - self.yMin) / (self.yMax - self.yMin) * Double(self.bounds.height) )
             }
             path.line(to: CGPoint(x: x, y: y))
         }
