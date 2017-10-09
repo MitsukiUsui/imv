@@ -14,6 +14,7 @@
 		1F11BB371F64EF6000CF9199 /* DestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB361F64EF6000CF9199 /* DestinationView.swift */; };
 		1F11BB391F64EF7200CF9199 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB381F64EF7200CF9199 /* GridView.swift */; };
 		1F11BB3B1F64EF7F00CF9199 /* PlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */; };
+		1F83EEB41F8A66E80041DABB /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F83EEB31F8A66E80041DABB /* CategoryView.swift */; };
 		1F83F5321F8A0201009CD5EC /* Stopwatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F83F5311F8A0201009CD5EC /* Stopwatch.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		1F11BB361F64EF6000CF9199 /* DestinationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationView.swift; sourceTree = "<group>"; };
 		1F11BB381F64EF7200CF9199 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotView.swift; sourceTree = "<group>"; };
+		1F83EEB31F8A66E80041DABB /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		1F83F5311F8A0201009CD5EC /* Stopwatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stopwatch.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +79,7 @@
 				1F11BB361F64EF6000CF9199 /* DestinationView.swift */,
 				1F11BB381F64EF7200CF9199 /* GridView.swift */,
 				1F11BB3A1F64EF7F00CF9199 /* PlotView.swift */,
+				1F83EEB31F8A66E80041DABB /* CategoryView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -161,6 +164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F11BB371F64EF6000CF9199 /* DestinationView.swift in Sources */,
+				1F83EEB41F8A66E80041DABB /* CategoryView.swift in Sources */,
 				1F83F5321F8A0201009CD5EC /* Stopwatch.swift in Sources */,
 				1F11BB3B1F64EF7F00CF9199 /* PlotView.swift in Sources */,
 				1F11BB2A1F64EF0400CF9199 /* ViewController.swift in Sources */,

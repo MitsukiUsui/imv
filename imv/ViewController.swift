@@ -19,6 +19,9 @@ class ViewController: NSViewController {
     @IBOutlet weak var destView3: DestinationView!
     @IBOutlet weak var movieView: AVPlayerView!
     @IBOutlet weak var destViewMovie: DestinationView!
+    @IBOutlet weak var categoryView: CategoryView!
+    @IBOutlet weak var destViewCategory: DestinationView!
+    
     
     @IBOutlet weak var playPauseButton: NSButton!
     @IBOutlet weak var timeSlider: NSSlider!
@@ -36,6 +39,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var yMinLabel3: NSTextField!
     
     @IBOutlet weak var padField: NSTextField!
+    @IBOutlet weak var imageView: NSImageView!
     
     let stopwatch: Stopwatch = Stopwatch()
     
@@ -47,6 +51,7 @@ class ViewController: NSViewController {
             plotView1.updateDraw(time: self.currentTime)
             plotView2.updateDraw(time: self.currentTime)
             plotView3.updateDraw(time: self.currentTime)
+            categoryView.updateDraw(time: self.currentTime)
             
             if let player = movieView.player { // seek only when currentTime is set by timeSlider
                 if player.rate==0.0 {
@@ -89,10 +94,12 @@ class ViewController: NSViewController {
         destView3.delegate=self
         destViewMovie.delegate=self
         destViewMovie.filteringOptions = [NSPasteboardURLReadingContentsConformToTypesKey:[AVFileTypeMPEG4]]
+        destViewCategory.delegate=self
         
         stopwatch.delegate=self
         
         playPauseButton.image = NSImage(named: "PlayButton")
+        imageView.image = NSImage(named: "tri")
         timeSlider.minValue = 0.0
         timeSlider.maxValue = 60.0 //DEFAULT
         timeSlider.doubleValue = 0.0
@@ -130,9 +137,11 @@ class ViewController: NSViewController {
             plotView1.padSec = d
             plotView2.padSec = d
             plotView3.padSec = d
+            categoryView.padSec = d
             plotView1.updateDraw(time: currentTime)
             plotView2.updateDraw(time: currentTime)
             plotView3.updateDraw(time: currentTime)
+            categoryView.updateDraw(time: currentTime)
         }
     }
     
@@ -188,6 +197,9 @@ extension ViewController: DestinationViewDelegate {
             movieView.player = player
             timeSlider.maxValue = CMTimeGetSeconds(player.currentItem!.asset.duration)
             durationLabel.stringValue = self.createTimeString(time: timeSlider.maxValue)
+        }
+        else if sender == destViewCategory {
+            categoryView.readFile(urls[0])
         }
         else {
             print("ERROR DestinationViewDelegate not properly called.")
