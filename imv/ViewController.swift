@@ -101,7 +101,8 @@ class ViewController: NSViewController {
         playPauseButton.image = NSImage(named: "PlayButton")
         imageView.image = NSImage(named: "tri")
         timeSlider.minValue = 0.0
-        timeSlider.maxValue = 60.0 //DEFAULT
+        timeSlider.maxValue = 30.0 //DEFAULT
+        durationLabel.stringValue = self.createTimeString(time: timeSlider.maxValue)
         timeSlider.doubleValue = 0.0
     }
 
