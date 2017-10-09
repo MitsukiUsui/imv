@@ -29,9 +29,21 @@ class GridView: NSView {
     func drawVerticleLines(_ lineCount: Int) {
         for i in 0..<lineCount {
             let x = CGFloat(Double(i+1)/Double(lineCount+1)) * self.width
+            var color: NSColor
+            var lineWidth: Double
+            if (i==1){ //TODO 1 is on center only when lineCount==3. Fixit!
+                color=NSColor.red
+                lineWidth=1
+            }else{
+                color=NSColor.gray
+                lineWidth=0.3
+            }
+            
             self.drawLine(
                 from: CGPoint(x: x, y: 0),
-                to: CGPoint(x: x, y: self.height)
+                to: CGPoint(x: x, y: self.height),
+                color: color,
+                lineWidth: lineWidth
             )
         }
     }
@@ -41,19 +53,20 @@ class GridView: NSView {
             let y = CGFloat(Double(i+1)/Double(lineCount+1)) * self.height
             self.drawLine(
                 from: CGPoint(x: 0, y: y),
-                to: CGPoint(x: self.width, y: y)
+                to: CGPoint(x: self.width, y: y),
+                color: NSColor.gray,
+                lineWidth: 0.3
             )
         }
     }
     
-    func drawLine(from: CGPoint, to: CGPoint) {
+    func drawLine(from: CGPoint, to: CGPoint, color: NSColor, lineWidth: Double) {
         let linePath = NSBezierPath()
         
         linePath.move(to: from)
         linePath.line(to: to)
         
-        linePath.lineWidth = 0.3
-        let color = NSColor.gray
+        linePath.lineWidth = CGFloat(lineWidth)
         color.setStroke()
         linePath.stroke()
         linePath.close()
