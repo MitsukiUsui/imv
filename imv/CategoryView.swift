@@ -68,9 +68,9 @@ class CategoryView: NSView {
     }
     
     func parseColorConfiguration(_ header: String) {
-        assert (header[header.startIndex]=="#", "ERROR: no configuration header found")
+        assert ((header[header.startIndex]=="#") && (header[header.index(header.startIndex, offsetBy:1)]=="#"), "ERROR: no color configuration header found")
         
-        let splitedHeader=header.suffix(header.count-1).components(separatedBy: ";")
+        let splitedHeader=header.suffix(header.count-2).components(separatedBy: ";")
         for substr in splitedHeader {
             let arr = substr.components(separatedBy: "=")
             if (arr.count==2) && (arr[1].count == 6) {
